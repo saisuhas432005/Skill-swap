@@ -19,10 +19,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
-build: {
-  rollupOptions: {
-    external: ['agora-rtc-sdk-ng'],
+  build: {
+    rollupOptions: {
+      external: ['agora-rtc-sdk-ng'],
+    },
   },
-}
+}));
 
