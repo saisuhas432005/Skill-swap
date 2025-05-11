@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: "/", // Use "/" for Vercel or Netlify (don't use "./")
+  base: "", // ✅ Set to empty string for Vercel deployment
   define: {
     "process.env": {},
   },
