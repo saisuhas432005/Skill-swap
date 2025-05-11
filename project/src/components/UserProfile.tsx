@@ -702,11 +702,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
         </CardContent>
       </Card>
 
-      {!isCurrentUser && profileData && (
-        <div className="mt-4">
-          <CallInitiation calleeId={profileUserId || ""} calleeName={profileData.full_name || profileData.username || "User"} />
-        </div>
-      )}
+      {/* Removed call initiation UI as per request */}
 
       <Tabs defaultValue="talents" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6 bg-gray-100">
