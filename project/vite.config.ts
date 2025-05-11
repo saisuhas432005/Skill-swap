@@ -21,8 +21,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     rollupOptions: {
-      // Remove external dependencies unless loading them via CDN
-      // external: ['agora-rtc-sdk-ng'],
+      // Remove 'external' unless loading via CDN
     },
   },
 }));
