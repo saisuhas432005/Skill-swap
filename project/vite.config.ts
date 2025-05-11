@@ -1,29 +1,27 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { componentTagger } from 'lovable-tagger';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: './', // ✅ This makes sure all paths are relative for deployment
+  base: './', // Ensures relative paths for assets
   server: {
-    host: "::",
+    host: '::',
     port: 8080,
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   build: {
+    outDir: 'dist',
     rollupOptions: {
-      // ❌ Remove this if you're not manually loading agora via CDN
-      // Or ensure you load it in index.html via <script src="">
+      // Remove external dependencies unless loading them via CDN
       // external: ['agora-rtc-sdk-ng'],
     },
   },
