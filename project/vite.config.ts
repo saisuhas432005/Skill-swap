@@ -5,6 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: './', // ✅ This makes sure all paths are relative for deployment
   server: {
     host: "::",
     port: 8080,
@@ -21,8 +22,9 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     rollupOptions: {
-      external: ['agora-rtc-sdk-ng'],
+      // ❌ Remove this if you're not manually loading agora via CDN
+      // Or ensure you load it in index.html via <script src="">
+      // external: ['agora-rtc-sdk-ng'],
     },
   },
 }));
-
