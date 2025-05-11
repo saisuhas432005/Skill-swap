@@ -1,11 +1,11 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import React from "react";
+import { Toaster } from "./components/ui/toaster";
+import { Toaster as Sonner } from "./components/ui/sonner";
+import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
-import AuthGuard from "@/auth/AuthGuard";
+import { AuthProvider } from "./context/AuthContext";
+import AuthGuard from "./auth/AuthGuard";
 
 // Pages
 import Index from "./pages/Index";
@@ -29,85 +29,124 @@ const queryClient = new QueryClient();
 
 import { CallProvider } from "./call/CallContext";
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <CallProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/upload" element={
-                <AuthGuard>
-                  <Upload />
-                </AuthGuard>
-              } />
-              <Route path="/skillswap" element={
-                <AuthGuard>
-                  <SkillSwap />
-                </AuthGuard>
-              } />
-              <Route path="/profile" element={
-                <AuthGuard>
-                  <Profile />
-                </AuthGuard>
-              } />
-              <Route path="/profile/:userId" element={
-                <AuthGuard>
-                  <Profile />
-                </AuthGuard>
-              } />
-              <Route path="/dashboard" element={
-                <AuthGuard>
-                  <Dashboard />
-                </AuthGuard>
-              } />
-              <Route path="/dashboard/dreamswap" element={
-                <AuthGuard>
-                  <DreamSwapDashboard />
-                </AuthGuard>
-              } />
-              <Route path="/video-feed" element={
-                <AuthGuard>
-                  <VideoFeedPage />
-                </AuthGuard>
-              } />
-              <Route path="/my-profile" element={
-                <AuthGuard>
-                  <MyProfilePage />
-                </AuthGuard>
-              } />
-              <Route path="/connect" element={
-                <AuthGuard>
-                  <ConnectPage />
-                </AuthGuard>
-              } />
-              <Route path="/messages" element={
-                <AuthGuard>
-                  <MessagesPage />
-                </AuthGuard>
-              } />
-              <Route path="/recommendations" element={
-                <AuthGuard>
-                  <RecommendationsPage />
-                </AuthGuard>
-              } />
-              <Route path="/onboarding" element={
-                <AuthGuard>
-                  <Onboarding />
-                </AuthGuard>
-              } />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </CallProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  console.log("App component rendering");
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <CallProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route
+                  path="/upload"
+                  element={
+                    <AuthGuard>
+                      <Upload />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/skillswap"
+                  element={
+                    <AuthGuard>
+                      <SkillSwap />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <AuthGuard>
+                      <Profile />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/profile/:userId"
+                  element={
+                    <AuthGuard>
+                      <Profile />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <AuthGuard>
+                      <Dashboard />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/dashboard/dreamswap"
+                  element={
+                    <AuthGuard>
+                      <DreamSwapDashboard />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/video-feed"
+                  element={
+                    <AuthGuard>
+                      <VideoFeedPage />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/my-profile"
+                  element={
+                    <AuthGuard>
+                      <MyProfilePage />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/connect"
+                  element={
+                    <AuthGuard>
+                      <ConnectPage />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/messages"
+                  element={
+                    <AuthGuard>
+                      <MessagesPage />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/recommendations"
+                  element={
+                    <AuthGuard>
+                      <RecommendationsPage />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/onboarding"
+                  element={
+                    <AuthGuard>
+                      <Onboarding />
+                    </AuthGuard>
+                  }
+                />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </CallProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
