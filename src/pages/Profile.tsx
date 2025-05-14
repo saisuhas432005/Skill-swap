@@ -48,7 +48,7 @@ const Profile = () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("id, username, full_name")
-        .ilike("username", `%${username}%`);
+        .or(`username.ilike.%${username}%,full_name.ilike.%${username}%`);
 
       console.log("Supabase query result:", { data, error });
 
