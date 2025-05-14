@@ -1,25 +1,21 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Edit, Star, Camera, Bell, UserRound, MessageSquare, Heart, Share2, Plus, Check, X, Play } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useParams } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { supabase } from "../integrations/supabase/client";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../hooks/use-toast";
+import { Skeleton } from "./ui/skeleton";
+
 
 // Form schemas
 const profileSchema = z.object({
@@ -35,6 +31,10 @@ const skillSchema = z.object({
 });
 
 import React from "react";
+import { useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Edit, UserRound, Camera, Check, MessageSquare, Bell, Star, Plus, Play, Heart, Share2 } from "lucide-react";
 import CallInitiation from "./CallInitiation";
 
 type UserProfileProps = {
@@ -68,7 +68,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
       setActiveTab(initialTab);
     }
   }, [initialTab]);
-
 
   React.useEffect(() => {
     console.log("UserProfile useEffect: params.userId=", params.userId, "user.id=", user?.id);
@@ -251,7 +250,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
     },
   });
 
-
   useEffect(() => {
     console.log("UserProfile useEffect: params.userId=", params.userId, "user.id=", user?.id);
     // If a specific user ID is provided in the URL, use that
@@ -420,7 +418,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
       toast({
         title: isFollowing ? "Unfollowed" : "Following",
         description: isFollowing 
-          ? `You have unfollowed ${profileData?.username || 'this user'}`
+          ? `You have unfollowed ${profileData?.username || 'this user'}` 
           : `You are now following ${profileData?.username || 'this user'}`,
       });
     } catch (error) {
@@ -432,6 +430,50 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
       });
     } finally {
       setIsLoadingFollow(false);
+    }
+  };
+
+  const handleDeleteVideo = async (videoId: string, videoUrl: string) => {
+    if (!user) return;
+
+    if (!confirm("Are you sure you want to delete this video? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      // Extract file path from videoUrl
+      const url = new URL(videoUrl);
+      const filePath = url.pathname.substring(1); // remove leading slash
+
+      // Delete from Supabase storage
+      const { error: storageError } = await supabase.storage
+        .from("videos")
+        .remove([filePath]);
+
+      if (storageError) throw storageError;
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from("videos")
+        .delete()
+        .eq("id", videoId);
+
+      if (dbError) throw dbError;
+
+      // Update state
+      setUserUploads((prev) => prev.filter((upload) => upload.id !== videoId));
+
+      toast({
+        title: "Video deleted",
+        description: "Your video has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting video:", error);
+      toast({
+        title: "Delete failed",
+        description: "There was an error deleting your video. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -527,7 +569,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
       });
     }
   };
-  
 
   if (isLoading) {
     return (
@@ -795,6 +836,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
                       <Button size="sm" variant="ghost" className="p-1 h-auto">
                         <Share2 className="h-4 w-4 text-gray-600" />
                       </Button>
+                      {isCurrentUser && (
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          className="p-1 h-auto" 
+                          onClick={() => handleDeleteVideo(upload.id, upload.video_url)}
+                        >
+                          Delete
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -804,7 +855,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId: propUserId, initialTa
             {isCurrentUser && (
               <Card 
                 className="border-dashed border-2 hover:bg-gray-50 cursor-pointer transition-colors h-64"
-                onClick={() => window.location.href = "/upload"}
+                onClick={() => navigate("/upload")}
               >
                 <CardContent className="p-6 flex flex-col items-center justify-center h-full text-center">
                   <div className="w-12 h-12 rounded-full bg-spark-purple/10 flex items-center justify-center mb-3">

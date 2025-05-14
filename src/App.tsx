@@ -36,114 +36,112 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <CallProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route
-                  path="/upload"
-                  element={
-                    <AuthGuard>
-                      <Upload />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/skillswap"
-                  element={
-                    <AuthGuard>
-                      <SkillSwap />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <AuthGuard>
-                      <Profile />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/profile/:userId"
-                  element={
-                    <AuthGuard>
-                      <Profile />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <AuthGuard>
-                      <Dashboard />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/dashboard/dreamswap"
-                  element={
-                    <AuthGuard>
-                      <DreamSwapDashboard />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/video-feed"
-                  element={
-                    <AuthGuard>
-                      <VideoFeedPage />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/my-profile"
-                  element={
-                    <AuthGuard>
-                      <MyProfilePage />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/connect"
-                  element={
-                    <AuthGuard>
-                      <ConnectPage />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/messages"
-                  element={
-                    <AuthGuard>
-                      <MessagesPage />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/recommendations"
-                  element={
-                    <AuthGuard>
-                      <RecommendationsPage />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/onboarding"
-                  element={
-                    <AuthGuard>
-                      <Onboarding />
-                    </AuthGuard>
-                  }
-                />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </CallProvider>
-          </AuthProvider>
-        </BrowserRouter>
+        <AuthProvider>
+          <CallProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route
+                path="/upload"
+                element={
+                  <AuthGuard>
+                    <Upload />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/skillswap"
+                element={
+                  <AuthGuard>
+                    <SkillSwap />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <AuthGuard>
+                    <Profile />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/profile/:userId"
+                element={
+                  <AuthGuard>
+                    <Profile />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthGuard>
+                    <Dashboard />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/dashboard/dreamswap"
+                element={
+                  <AuthGuard>
+                    <DreamSwapDashboard />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/video-feed"
+                element={
+                  <AuthGuard>
+                    <VideoFeedPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/my-profile"
+                element={
+                  <AuthGuard>
+                    <MyProfilePage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/connect"
+                element={
+                  <AuthGuard>
+                    <ConnectPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/messages"
+                element={
+                  <AuthGuard>
+                    <MessagesPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/recommendations"
+                element={
+                  <AuthGuard>
+                    <RecommendationsPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/onboarding"
+                element={
+                  <AuthGuard>
+                    <Onboarding />
+                  </AuthGuard>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </CallProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

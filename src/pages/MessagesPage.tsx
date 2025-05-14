@@ -1,6 +1,7 @@
 import * as React from "react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+/* Removed Footer import as footer is to be removed from messages dashboard */
+// import Footer from "../components/Footer";
 import EnhancedUserChat from "../components/EnhancedUserChat";
 
 import { useCall } from "../call/CallContext";
@@ -21,7 +22,8 @@ const MessagesPage = () => {
         )}
         <CallVideo />
       </main>
-      <Footer />
+      {/* Footer removed from messages dashboard */}
+      {/* <Footer /> */}
     </div>
   );
 };

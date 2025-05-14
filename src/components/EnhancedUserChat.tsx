@@ -1,19 +1,16 @@
-
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Video, Phone, Monitor, Loader2, Send, User } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../integrations/supabase/client";
+import { useToast } from "../hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
+import { Badge } from "./ui/badge";
+import { Video, Phone, Loader2, Send, User, ArrowLeft, Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import VideoCallInterface from "@/components/VideoCallInterface";
+import VideoCallInterface from "./VideoCallInterface";
 
 type ChatMessage = {
   id: string;
@@ -44,6 +41,7 @@ const EnhancedUserChat = () => {
   const [activeChatUser, setActiveChatUser] = useState<ContactType | null>(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCallActive, setIsCallActive] = useState(false);
@@ -52,8 +50,12 @@ const EnhancedUserChat = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
 
+  // New state to track mobile chat view
+  const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
+
   // For real-time updates
   const [realtimeChannel, setRealtimeChannel] = useState<any>(null);
+  
   
   useEffect(() => {
     if (user) {
@@ -73,11 +75,12 @@ const EnhancedUserChat = () => {
       fetchMessages(activeChat);
       const selectedContact = contacts.find(contact => contact.id === activeChat) || null;
       setActiveChatUser(selectedContact);
+      // Open chat area on mobile when a contact is selected
+      setIsMobileChatOpen(true);
     }
   }, [activeChat, contacts]);
   
   useEffect(() => {
-    // Filter contacts based on search term
     if (searchTerm) {
       const filtered = contacts.filter(contact => 
         contact.username.toLowerCase().includes(searchTerm.toLowerCase())
@@ -89,7 +92,6 @@ const EnhancedUserChat = () => {
   }, [searchTerm, contacts]);
   
   useEffect(() => {
-    // Scroll to bottom when messages change
     scrollToBottom();
   }, [messages]);
   
@@ -100,7 +102,6 @@ const EnhancedUserChat = () => {
   const subscribeToMessages = () => {
     if (!user) return;
     
-    // Subscribe to new messages
     const channel = supabase
       .channel('messages-channel')
       .on(
@@ -121,12 +122,10 @@ const EnhancedUserChat = () => {
   };
   
   const handleNewMessage = (newMessage: ChatMessage) => {
-    // If chat with sender is active, add to messages
     if (activeChat === newMessage.sender_id) {
       setMessages(prev => [...prev, newMessage]);
     } 
     
-    // Update last message for contact
     setContacts(prev => 
       prev.map(contact => {
         if (contact.id === newMessage.sender_id) {
@@ -141,7 +140,6 @@ const EnhancedUserChat = () => {
       })
     );
     
-    // Show toast notification
     if (activeChat !== newMessage.sender_id) {
       const sender = contacts.find(c => c.id === newMessage.sender_id);
       toast({
@@ -159,7 +157,6 @@ const EnhancedUserChat = () => {
     try {
       setLoading(true);
       
-      // Get users who the current user follows
       const { data: following, error: followingError } = await supabase
         .from('followers')
         .select('following_id')
@@ -169,7 +166,6 @@ const EnhancedUserChat = () => {
       
       const followingIds = following.map(f => f.following_id);
       
-      // Get users who follow the current user
       const { data: followers, error: followersError } = await supabase
         .from('followers')
         .select('follower_id')
@@ -179,7 +175,6 @@ const EnhancedUserChat = () => {
       
       const followerIds = followers.map(f => f.follower_id);
       
-      // Find mutual followers (users who both follow and are followed by the current user)
       const mutualIds = followingIds.filter(id => followerIds.includes(id));
       
       if (mutualIds.length === 0) {
@@ -187,7 +182,6 @@ const EnhancedUserChat = () => {
         return;
       }
       
-      // Get profile information for mutual followers
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id, username, avatar_url')
@@ -197,7 +191,6 @@ const EnhancedUserChat = () => {
       
       const contactsWithLastMessage: ContactType[] = await Promise.all(
         profiles.map(async (profile) => {
-          // Get last message between users
           const { data: lastMessages, error: messagesError } = await supabase
             .from('messages')
             .select('*')
@@ -212,7 +205,7 @@ const EnhancedUserChat = () => {
               last_message: undefined,
               last_message_time: undefined,
               unread_count: 0,
-              online: Math.random() > 0.5 // Simulate online status for demo
+              online: Math.random() > 0.5
             };
           }
           
@@ -221,14 +214,14 @@ const EnhancedUserChat = () => {
               ...profile,
               last_message: lastMessages[0].message,
               last_message_time: lastMessages[0].created_at,
-              unread_count: 0, // For a real app, fetch actual unread count
-              online: Math.random() > 0.5 // Simulate online status for demo
+              unread_count: 0,
+              online: Math.random() > 0.5
             };
           }
           
           return {
             ...profile,
-            online: Math.random() > 0.5 // Simulate online status for demo
+            online: Math.random() > 0.5
           };
         })
       );
@@ -236,7 +229,6 @@ const EnhancedUserChat = () => {
       setContacts(contactsWithLastMessage);
       setFilteredContacts(contactsWithLastMessage);
       
-      // If we have contacts, set the first one as active
       if (contactsWithLastMessage.length > 0 && !activeChat) {
         setActiveChat(contactsWithLastMessage[0].id);
       }
@@ -255,7 +247,6 @@ const EnhancedUserChat = () => {
 
   const fetchMessages = async (chatUserId: string) => {
     try {
-      // Use a direct query instead of RPC for better type safety
       const { data: messagesFrom, error: errorFrom } = await supabase
         .from('messages')
         .select('*')
@@ -272,14 +263,10 @@ const EnhancedUserChat = () => {
         
       if (errorTo) throw errorTo;
       
-      // Combine and sort messages by timestamp
       const allMessages = [...(messagesFrom || []), ...(messagesTo || [])];
       allMessages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
       
       setMessages(allMessages);
-      
-      // Mark messages as read (in a real app)
-      // This would update a read_status field
       
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -291,43 +278,164 @@ const EnhancedUserChat = () => {
     }
   };
   
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!message.trim() || !activeChat || !user) return;
-    
+  const deleteMessage = async (messageId: string) => {
     try {
-      setSending(true);
-      
-      // Direct insert instead of RPC for better type safety
+      // Supabase expects id to be a UUID string, use as is
+      if (typeof messageId !== 'string' || messageId.trim() === '') {
+        throw new Error('Invalid message ID');
+      }
       const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', messageId);
+      if (error) throw error;
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      setSelectedMessageId(null);
+      toast({
+        title: "Message deleted",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast({
+        title: "Failed to delete message",
+        description: "There was a problem deleting the message.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+  };
+
+  const uploadFileAndSendMessage = async () => {
+    if (!file || !activeChat || !user) return;
+
+    try {
+      setUploadingFile(true);
+
+      // Generate unique file path
+      const fileExt = file.name.split('.').pop();
+      const timestamp = Date.now();
+      const filePath = `chat_files/${user.id}/${timestamp}.${fileExt}`;
+
+      console.log('Uploading file:', file.name, 'with MIME type:', file.type);
+
+      // Upload file to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from('chat_files')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: publicURLData } = supabase.storage
+        .from('chat_files')
+        .getPublicUrl(filePath);
+
+      if (!publicURLData || !publicURLData.publicUrl) {
+        console.error('Failed to get public URL for file:', file.name);
+        throw new Error('Failed to get file URL');
+      }
+
+      console.log('Public URL:', publicURLData.publicUrl);
+
+      // Send message with file URL and metadata
+      const fileMessage = JSON.stringify({
+        type: 'file',
+        url: publicURLData.publicUrl,
+        name: file.name,
+        mimeType: file.type,
+      });
+
+      const { data, error } = await supabase
         .from('messages')
         .insert({
           sender_id: user.id,
           receiver_id: activeChat,
-          message: message.trim()
-        });
-      
+          message: fileMessage,
+        })
+        .select()
+        .single();
+
+      console.log('Inserted file message data:', data, 'error:', error);
+
+      if (error) {
+        console.error('Error inserting message:', error);
+        throw error;
+      }
+
+      if (data) {
+        setMessages(prev => [...prev, data]);
+      }
+
+      setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Error uploading file and sending message:', error);
+      toast({
+        title: 'Failed to send file',
+        description: 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (file) {
+      await uploadFileAndSendMessage();
+      return;
+    }
+
+    if (!message.trim() || !activeChat || !user) return;
+
+    try {
+      setSending(true);
+
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          sender_id: user.id,
+          receiver_id: activeChat,
+          message: message.trim(),
+        })
+        .select()
+        .single();
+
+      console.log('Inserted text message data:', data, 'error:', error);
+
       if (error) throw error;
-      
-      // Local optimistic update
-      setMessages(prev => [...prev, {
-        id: Date.now().toString(),
-        sender_id: user.id,
-        receiver_id: activeChat,
-        message: message.trim(),
-        created_at: new Date().toISOString()
-      }]);
-      
-      // Clear input
-      setMessage("");
-      
+
+      if (data) {
+        setMessages(prev => [...prev, data]);
+      }
+
+      setMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
         title: 'Failed to send message',
         description: 'Please try again',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSending(false);
@@ -414,9 +522,9 @@ const EnhancedUserChat = () => {
       </CardHeader>
       
       <CardContent className="p-0">
-        <div className="grid grid-cols-1 md:grid-cols-3 h-[600px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 h-[600px] md:h-[calc(100vh-8rem)]">
           {/* Contacts List */}
-          <div className="border-r">
+          <div className={`border-r md:block ${isMobileChatOpen ? 'hidden' : 'block'}`}>
             <div className="p-4">
               <Input
                 placeholder="Search contacts..."
@@ -426,7 +534,7 @@ const EnhancedUserChat = () => {
               />
             </div>
             
-            <ScrollArea className="h-[540px]">
+            <ScrollArea className="h-[540px] md:h-[calc(100vh-12rem)]">
               <div className="px-2">
                 {filteredContacts.length === 0 ? (
                   <div className="text-center py-8 px-4">
@@ -483,11 +591,18 @@ const EnhancedUserChat = () => {
           </div>
           
           {/* Chat Area */}
-          <div className="col-span-1 md:col-span-2 flex flex-col h-full">
+          <div className={`col-span-1 md:col-span-2 flex flex-col h-full ${isMobileChatOpen ? 'block' : 'hidden'} md:block`}>
             {activeChat && activeChatUser ? (
               <>
+                {/* Mobile back button */}
+                <div className="md:hidden p-2 border-b flex items-center">
+                  <Button variant="ghost" size="icon" onClick={() => setIsMobileChatOpen(false)} title="Back to contacts">
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <p className="ml-2 font-medium">{activeChatUser.username}</p>
+                </div>
                 {/* Chat Header */}
-                <div className="border-b p-4 flex justify-between items-center">
+                <div className="border-b p-4 flex justify-between items-center hidden md:flex">
                   <div className="flex items-center">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={activeChatUser.avatar_url || ""} />
@@ -524,8 +639,8 @@ const EnhancedUserChat = () => {
                 </div>
                 
                 {/* Messages */}
-                <ScrollArea className="flex-1 p-4">
-                  <div className="space-y-4">
+                <ScrollArea className="flex-1 p-4 overflow-y-auto">
+                  <div className="divide-y divide-gray-300 space-y-0">
                     {messages.length === 0 ? (
                       <div className="text-center py-8">
                         <p className="text-sm text-muted-foreground">
@@ -535,24 +650,98 @@ const EnhancedUserChat = () => {
                     ) : (
                       messages.map((msg) => {
                         const isCurrentUser = msg.sender_id === user.id;
+                        const isSelected = selectedMessageId === msg.id;
                         return (
                           <div 
                             key={msg.id}
-                            className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                            className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'} py-2`}
                           >
                             <div 
-                              className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                              className={`max-w-full sm:max-w-[80%] rounded-lg px-4 py-2 break-words relative cursor-pointer ${
                                 isCurrentUser 
                                   ? 'bg-primary text-primary-foreground' 
                                   : 'bg-muted'
-                              }`}
+                              } ${isSelected ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
+                              onClick={() => {
+                                setSelectedMessageId(prev => prev === msg.id ? null : msg.id);
+                              }}
                             >
-                              <p>{msg.message}</p>
-                              <p className={`text-xs ${isCurrentUser ? 'text-primary-foreground/70' : 'text-muted-foreground'} text-right mt-1`}>
-                                {format(new Date(msg.created_at), 'p')}
-                              </p>
-                            </div>
-                          </div>
+                      {(() => {
+                        try {
+                          const parsed = JSON.parse(msg.message);
+                          if (parsed.type === 'file' && parsed.url) {
+                            const url = parsed.url;
+                            const name = parsed.name || 'file';
+                            const mimeType = parsed.mimeType || '';
+                            if (mimeType.startsWith('image/')) {
+                              return (
+                                <img
+                                  src={url}
+                                  alt={name}
+                                  className="max-w-full max-h-60 rounded"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = '/fallback-image.png';
+                                  }}
+                                />
+                              );
+                            } else if (mimeType.startsWith('video/')) {
+                              return (
+                                <video
+                                  controls
+                                  src={url}
+                                  className="max-w-full max-h-60 rounded"
+                                  onError={(e) => {
+                                    e.currentTarget.poster = '/fallback-video.png';
+                                  }}
+                                />
+                              );
+                            } else if (mimeType === 'application/pdf') {
+                              return (
+                                <a
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 underline"
+                                >
+                                  {name}
+                                </a>
+                              );
+                            } else {
+                              return (
+                                <a
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 underline"
+                                >
+                                  {name}
+                                </a>
+                              );
+                            }
+                          }
+                        } catch {
+                          // Not a JSON message, fall back to text
+                        }
+                        return <p>{msg.message}</p>;
+                      })()}
+                      <p className={`text-xs ${isCurrentUser ? 'text-primary-foreground/70' : 'text-muted-foreground'} text-right mt-1`}>
+                        {format(new Date(msg.created_at), 'p')}
+                      </p>
+                      {isCurrentUser && isSelected && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteMessage(msg.id);
+                          }}
+                          className="absolute top-1 right-1 p-2 bg-red-700 hover:bg-red-600 rounded shadow-lg"
+                          aria-label="Delete message"
+                          title="Delete message"
+                        >
+                          <Trash2 className="h-5 w-5 text-white" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                         );
                       })
                     )}
@@ -561,20 +750,32 @@ const EnhancedUserChat = () => {
                 </ScrollArea>
                 
                 {/* Message Input */}
-                <form onSubmit={sendMessage} className="border-t p-4 flex space-x-2">
+                <form onSubmit={sendMessage} className="border-t p-4 flex space-x-2 sticky bottom-0 bg-background z-10">
                   <Input
                     placeholder="Type a message..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    disabled={sending}
+                    disabled={sending || uploadingFile}
                     className="flex-1"
                   />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    id="file-upload"
+                    accept="image/*,video/*,application/pdf"
+                    onChange={handleFileChange}
+                    disabled={sending || uploadingFile}
+                    className="hidden"
+                  />
+                  <label htmlFor="file-upload" className="inline-flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 cursor-pointer px-3 py-1 text-gray-700">
+                    📎
+                  </label>
                   <Button 
                     type="submit" 
                     size="icon" 
-                    disabled={sending || !message.trim()}
+                    disabled={sending || (!message.trim() && !file) || uploadingFile}
                   >
-                    {sending ? (
+                    {sending || uploadingFile ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Send className="h-4 w-4" />

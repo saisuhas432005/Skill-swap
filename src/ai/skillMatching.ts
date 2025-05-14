@@ -10,13 +10,24 @@ export type SkillMatch = {
   matchScore: number;
 };
 
+interface ApiMatch {
+  id?: string;
+  userId?: string;
+  name?: string;
+  avatar_url?: string | null;
+  bio?: string;
+  offered_skill: string;
+  wanted_skill: string;
+  match_score?: number;
+}
+
 export async function findSkillMatches(params: {
   offeredSkill: string;
   wantedSkill: string;
   offeredSkillLevel?: string;
   userId: string;
   maxMatches?: number;
-}): Promise<{ matches?: SkillMatch[]; error?: any }> {
+}): Promise<{ matches?: SkillMatch[]; error?: unknown }> {
   try {
     const response = await fetch(AI_API_BASE + "/match-skill", {
       method: "POST",
@@ -41,7 +52,7 @@ export async function findSkillMatches(params: {
     }
 
     // Map API matches to SkillMatch type
-    const matches: SkillMatch[] = data.matches.slice(0, params.maxMatches || 5).map((match: any) => ({
+    const matches: SkillMatch[] = data.matches.slice(0, params.maxMatches || 5).map((match: ApiMatch) => ({
       userId: match.id || match.userId || "",
       fullName: match.name,
       avatarUrl: match.avatar_url || null,
@@ -52,12 +63,12 @@ export async function findSkillMatches(params: {
     }));
 
     return { matches };
-  } catch (error) {
+  } catch (error: unknown) {
     return { error };
   }
 }
 
-export async function detectSkill(videoUrl: string): Promise<{ detected_skill?: string; error?: any }> {
+export async function detectSkill(videoUrl: string): Promise<{ detected_skill?: string; error?: unknown }> {
   try {
     const response = await fetch(AI_API_BASE + "/detect-skill", {
       method: "POST",
@@ -75,7 +86,7 @@ export async function detectSkill(videoUrl: string): Promise<{ detected_skill?: 
     const data = await response.json();
 
     return { detected_skill: data.detected_skill };
-  } catch (error) {
+  } catch (error: unknown) {
     return { error };
   }
 }

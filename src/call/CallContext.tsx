@@ -4,13 +4,15 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 // If types are missing, you can declare a module for it in a separate .d.ts file
 import AgoraRTC from "agora-rtc-sdk-ng";
 
+import type { IAgoraRTCClient, IMicrophoneAudioTrack, ICameraVideoTrack, IRemoteVideoTrack, IRemoteAudioTrack } from "agora-rtc-sdk-ng";
+
 type CallContextType = {
-  client: any | null;
-  localAudioTrack: any | null;
-  localVideoTrack: any | null;
+  client: IAgoraRTCClient | null;
+  localAudioTrack: IMicrophoneAudioTrack | null;
+  localVideoTrack: ICameraVideoTrack | null;
   remoteUsers: Map<
     number,
-    { videoTrack: any | null; audioTrack: any | null }
+    { videoTrack: IRemoteVideoTrack | null; audioTrack: IRemoteAudioTrack | null }
   >;
   joinCall: (channel: string, token: string | null, uid?: number) => Promise<void>;
   leaveCall: () => Promise<void>;
@@ -36,15 +38,15 @@ export const useCall = () => {
 export const CallProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [client] = useState<any>(
+  const [client] = useState<IAgoraRTCClient | null>(
     AgoraRTC.createClient({ mode: "rtc", codec: "vp8" })
   );
-  const [localAudioTrack, setLocalAudioTrack] = useState<any | null>(null);
-  const [localVideoTrack, setLocalVideoTrack] = useState<any | null>(null);
+  const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null);
+  const [localVideoTrack, setLocalVideoTrack] = useState<ICameraVideoTrack | null>(null);
   const [remoteUsers, setRemoteUsers] = useState(
     new Map<
       number,
-      { videoTrack: any | null; audioTrack: any | null }
+      { videoTrack: IRemoteVideoTrack | null; audioTrack: IRemoteAudioTrack | null }
     >()
   );
   const [isAudioMuted, setIsAudioMuted] = useState(false);
@@ -154,7 +156,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({
   // Handle remote users published/unpublished
   useEffect(() => {
     if (!client) return;
-    const handleUserPublished = async (user, mediaType) => {
+    const handleUserPublished = async (user: import("agora-rtc-sdk-ng").IRemoteUser, mediaType: "audio" | "video") => {
       await client.subscribe(user, mediaType);
       setRemoteUsers((prev) => {
         const newMap = new Map(prev);
@@ -174,7 +176,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({
       });
     };
 
-    const handleUserUnpublished = (user, mediaType) => {
+    const handleUserUnpublished = (user: import("agora-rtc-sdk-ng").IRemoteUser, mediaType: "audio" | "video") => {
       setRemoteUsers((prev) => {
         const newMap = new Map(prev);
         if (mediaType === "video") {

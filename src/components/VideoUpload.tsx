@@ -193,30 +193,31 @@ const VideoUpload = () => {
       const year = now.getFullYear();
       const weekNumber = Math.ceil((now.getTime() - new Date(year, 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
       
-      // Check if user already uploaded for this week
-      const { data: existingVideo, error: checkError } = await supabase
-        .from('videos')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('year', year)
-        .eq('week_number', weekNumber)
-        .maybeSingle();
+      // Removed weekly upload limit check to allow unlimited uploads
+      // const { data: existingVideo, error: checkError } = await supabase
+      //   .from('videos')
+      //   .select('id')
+      //   .eq('user_id', user.id)
+      //   .eq('year', year)
+      //   .eq('week_number', weekNumber)
+      //   .maybeSingle();
       
-      if (checkError) throw checkError;
+      // if (checkError) throw checkError;
       
-      if (existingVideo) {
-        toast({
-          title: "Weekly upload limit reached",
-          description: "You've already uploaded a video this week. Try again next week!",
-          variant: "destructive",
-        });
-        setIsUploading(false);
-        return;
-      }
+      // if (existingVideo) {
+      //   toast({
+      //     title: "Weekly upload limit reached",
+      //     description: "You've already uploaded a video this week. Try again next week!",
+      //     variant: "destructive",
+      //   });
+      //   setIsUploading(false);
+      //   return;
+      // }
       
       // Upload video file to Supabase storage
       const fileExt = videoFile.name.split('.').pop();
-      const filePath = `${user.id}/${year}_${weekNumber}.${fileExt}`;
+      const timestamp = Date.now();
+      const filePath = `${user.id}/${year}_${weekNumber}_${timestamp}.${fileExt}`;
       
       // Simulate upload progress
       const progressInterval = setInterval(() => {

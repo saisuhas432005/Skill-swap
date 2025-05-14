@@ -1,8 +1,7 @@
-
 import { useEffect } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import VideoUpload from "@/components/VideoUpload";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import VideoUpload from "../components/VideoUpload";
 
 const Upload = () => {
   useEffect(() => {

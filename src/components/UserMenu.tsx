@@ -46,7 +46,7 @@ const UserMenu = () => {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/profile" className="flex cursor-pointer items-center">
+          <Link to="/my-profile" className="flex cursor-pointer items-center">
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </Link>
