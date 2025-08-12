@@ -95,6 +95,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         data: {
           full_name: fullName,
         },
+        emailRedirectTo: "https://skill-swap-self.vercel.app/"
+  },
       },
     });
     
