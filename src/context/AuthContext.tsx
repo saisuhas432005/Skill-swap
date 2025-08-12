@@ -88,16 +88,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (email: string, password: string, fullName: string) => {
     setLoading(true);
     
-    const { error, data } = await supabase.auth.signUp({
+    const redirectUrl = "https://skill-swap-self.vercel.app/";
+
+const { error, data } = await supabase.auth.signUp({
   email,
   password,
   options: {
     data: {
       full_name: fullName,
     },
-    emailRedirectTo: "https://skill-swap-self.vercel.app/"
-  }
+    emailRedirectTo: redirectUrl,
+  },
 });
+
 
     
     if (error) {
