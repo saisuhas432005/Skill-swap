@@ -1,11 +1,6 @@
-Here’s your **README.md rewritten with a professional design, your provided content, and an image at the top**. You can copy and paste it directly. Just make sure you save your image (e.g. screenshot) as `screenshot.png` in your repo root.
 
----
-
-````markdown
 # ✨ SkillSpark — OneChance + DreamSwap Hybrid
 <img width="1785" height="967" alt="Screenshot 2025-08-15 233006" src="https://github.com/user-attachments/assets/5fdccbed-5f7c-4183-b45e-184f281d0c73" />
-
 
 *AI-powered talent discovery and skill-swapping platform to help students and job-seekers showcase hidden talents and learn new skills.*
 
