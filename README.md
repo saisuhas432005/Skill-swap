@@ -5,7 +5,8 @@ Here’s your **README.md rewritten with a professional design, your provided co
 ````markdown
 # ✨ SkillSpark — OneChance + DreamSwap Hybrid
 
-<img width="1785" height="967" alt="image" src="https://github.com/user-attachments/assets/f9e66ca1-772d-446a-96f0-0c8356761664" />
+<img width="1785" height="967" alt="image" src="https://github.com/user-attachments/assets/83049f75-6398-4a99-b2cb-55b619699782" />
+
 
 *AI-powered talent discovery and skill-swapping platform to help students and job-seekers showcase hidden talents and learn new skills.*
 
