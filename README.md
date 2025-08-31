@@ -1,5 +1,5 @@
 
-# ✨ SkillSpark — OneChance + DreamSwap Hybrid
+# ✨ SkillSwap — OneChance + DreamSwap Hybrid
 <img width="1785" height="967" alt="Screenshot 2025-08-15 233006" src="https://github.com/user-attachments/assets/5fdccbed-5f7c-4183-b45e-184f281d0c73" />
 
 *AI-powered talent discovery and skill-swapping platform to help students and job-seekers showcase hidden talents and learn new skills.*
@@ -11,7 +11,7 @@
 ---
 
 ## 🚀 Live Demo & Repo
-- **Live App:** [https://skill-swap-self.vercel.app/](https://skill-swap-self.vercel.app/)  
+- **Live App:** [https://skill-swap-theta-five.vercel.app/](https://skill-swap-theta-five.vercel.app/)
 - **Source Code:** [https://github.com/kottanaindrakiran/SkillSwap-.git](https://github.com/kottanaindrakiran/SkillSwap-.git)  
 
 ---
