@@ -87,8 +87,8 @@
 
 ### 1. Clone the Repo
 ```bash
-git clone https://github.com/kottanaindrakiran/SkillSwap-.git
-cd SkillSwap-
+https://github.com/saisuhas432005/Skill-swap.git
+cd SkillSwap
 ````
 
 ### 2. Setup Frontend
