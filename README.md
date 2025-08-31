@@ -12,7 +12,7 @@
 
 ## 🚀 Live Demo & Repo
 - **Live App:** [https://skill-swap-theta-five.vercel.app/](https://skill-swap-theta-five.vercel.app/)
-- **Source Code:** [https://github.com/kottanaindrakiran/SkillSwap-.git](https://github.com/kottanaindrakiran/SkillSwap-.git)  
+- **Source Code:** [https://github.com/saisuhas432005/Skill-swap.git](https://github.com/saisuhas432005/Skill-swap.git))  
 
 ---
 
